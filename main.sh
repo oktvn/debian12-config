@@ -1,30 +1,5 @@
 # Settings
-dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,maximize,close'"
-dconf write /org/gnome/mutter/attach-modal-dialogs false
-dconf write /org/gnome/desktop/peripherals/mouse/accel-profile "'adaptive'"
-dconf write /org/gnome/desktop/peripherals/touchpad/natural-scroll false
-dconf write /org/gnome/desktop/peripherals/touchpad/tap-to-click true
-dconf write /org/gnome/desktop/interface/enable-hot-corners false
-dconf write /org/gnome/shell/favorite-apps "['firefox-esr.desktop', 'org.gnome.Terminal.desktop']"
-dconf write /org/gnome/desktop/background/picture-uri "'file:///usr/share/backgrounds/gnome/vnc-l.webp'"
-dconf write /org/gnome/desktop/background/picture-uri-dark "'file:///usr/share/backgrounds/gnome/vnc-d.webp'"
-dconf write /org/gnome/desktop/background/primary-color "'#77767B'"
-dconf write /org/gnome/desktop/screensaver/picture-uri "'file:///usr/share/backgrounds/gnome/vnc-l.webp'"
-dconf write /org/gnome/desktop/screensaver/primary-color "'#77767B'"
-
-# Gnome Text Editor
-dconf write /org/gnome/TextEditor/show-line-numbers true
-dconf write /org/gnome/TextEditor/spellcheck false
-dconf write /org/gnome/TextEditor/style-variant "'dark'"
-dconf write /org/gnome/TextEditor/indent-style "'space'"
-dconf write /org/gnome/TextEditor/style-scheme "'builder-dark'"
-dconf write /org/gnome/TextEditor/show-map true
-
-# Gnome Terminal
-dconf write /org/gnome/terminal/legacy/profiles:/*/audible-bell false
-dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/default-size-columns 100
-dconf write /org/gnome/terminal/legacy/keybindings/paste "'<Primary>v'"
-dconf write /org/gnome/terminal/legacy/keybindings/close-tab "'<Primary>w'"
+dconf load / < ./configs/dconf-settings.ini
 
 # Remove games & all useless trash.
 sudo systemctl stop packagekit
@@ -49,7 +24,6 @@ sudo apt install -y git wget gpg apt-transport-https code spotify-client sshpass
 
 # Install Gnome extensions:
 rm -rf $HOME/.local/share/gnome-shell/extensions/
-dconf reset -f "/org/gnome/shell/extensions/"
 sudo apt install pipx -y --no-install-recommends && pipx ensurepath
 pipx install gnome-extensions-cli --system-site-packages && source $HOME/.bashrc
 gext install dash-to-panel@jderose9.github.com
@@ -88,6 +62,5 @@ sudo mv composer.phar /usr/local/bin/composer
 # Configure LEMP
 sudo mysqladmin -u root password ''
 sudo mysql_upgrade -uroot --force
-
 
 gsettings reset org.gnome.shell app-picker-layout
