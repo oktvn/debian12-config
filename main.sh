@@ -82,6 +82,7 @@ sudo sed -i 's/--new-window//g' /usr/share/applications/thunar.desktop
 sudo rm -rf /usr/share/applications/org.gnome.Nautilus.desktop
 xdg-desktop-menu forceupdate
 
+# Remove password prompt when running sudo
 echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 
 # 2. Modify ~/.profile. Append:
