@@ -29,8 +29,9 @@ sudo mysqladmin -u root password ''
 sudo mysql_upgrade -uroot --force
 
 # Install Gnome extensions:
+rm -rf $HOME/.local/share/gnome-shell/extensions/
 sudo apt install pipx -y --no-install-recommends && pipx ensurepath
-pipx install gnome-extensions-cli --system-site-packages && source ~/.bashrc
+pipx install gnome-extensions-cli --system-site-packages && source $HOME/.bashrc
 gext install dash-to-panel@jderose9.github.com
 gext install ding@rastersoft.com
 gext install gestureImprovements@gestures
