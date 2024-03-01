@@ -1,0 +1,3 @@
+query=$(printf "DROP DATABASE IF EXISTS \`%s\`; CREATE DATABASE \`%s\`;" "$(basename "$PWD")" "$(basename "$PWD")")
+composer create --no-scripts craftcms/craft . && mysql -uroot -e "$query" && mv .env.example.dev .env && php craft setup/db-creds --interactive=0 --database=$(basename "$PWD") --user=root --password='' && php craft install --interactive=0 --email="admin@local.tld" --username=admin --password=password1 --siteName=$(basename "$PWD") --language=en --siteUrl=https://$(basename "$PWD").local.dev
+
