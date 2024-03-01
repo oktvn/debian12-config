@@ -51,7 +51,6 @@ dconf write /org/gnome/desktop/screensaver/primary-color "'#77767B'"
 
 
 
-# Install Ublock for Firefox
 
 # Dash to panel config:
 # ------------------------------
@@ -84,6 +83,11 @@ xdg-desktop-menu forceupdate
 
 # Remove password prompt when running sudo
 echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
+
+# Install Ublock for Firefox
+sudo apt install webext-ublock-origin
+# Install chromium
+sudo apt install chromium webext-ublock-origin-chromium
 
 # 2. Modify ~/.profile. Append:
 
