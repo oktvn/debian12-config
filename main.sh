@@ -50,7 +50,6 @@ dconf write /org/gnome/desktop/screensaver/picture-uri "'file:///usr/share/backg
 dconf write /org/gnome/desktop/screensaver/primary-color "'#77767B'"
 
 
-gsettings reset org.gnome.shell app-picker-layout
 
 # Install Ublock for Firefox
 
@@ -89,3 +88,4 @@ echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 
 echo -e "export MOZ_ENABLE_WAYLAND=1" >> ~/.profile
 
+gsettings reset org.gnome.shell app-picker-layout
