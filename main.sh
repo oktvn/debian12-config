@@ -42,22 +42,10 @@ curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > pac
 sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && rm -f packages.microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
 
-# Install LEMP
 sudo apt upgrade -y
 sudo apt update -y
-sudo apt install -y php8.2-{fpm,curl,zip,gd,mysqli,mbstring,pgsql,xml,bcmath,intl,soap,imagick} nginx mariadb-server
-sudo apt install -y git wget gpg apt-transport-https code spotify-client sshpass
-
-# Install composer
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-sudo mv composer.phar /usr/local/bin/composer
-
-# Configure LEMP
-sudo mysqladmin -u root password ''
-sudo mysql_upgrade -uroot --force
+# Install misc
+sudo apt install -y git wget gpg apt-transport-https code spotify-client sshpass bleachbit
 
 # Install Gnome extensions:
 rm -rf $HOME/.local/share/gnome-shell/extensions/
@@ -87,5 +75,19 @@ sudo apt install -y chromium webext-ublock-origin-chromium
 
 # 2. Modify ~/.profile. Append:
 echo -e "export MOZ_ENABLE_WAYLAND=1" >> ~/.profile
+
+
+# Install LEMP & Composer
+sudo apt install -y php8.2-{fpm,curl,zip,gd,mysqli,mbstring,pgsql,xml,bcmath,intl,soap,imagick} nginx mariadb-server
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+sudo mv composer.phar /usr/local/bin/composer
+
+# Configure LEMP
+sudo mysqladmin -u root password ''
+sudo mysql_upgrade -uroot --force
+
 
 gsettings reset org.gnome.shell app-picker-layout
