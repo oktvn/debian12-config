@@ -54,11 +54,11 @@ php composer-setup.php
 php -r "unlink('composer-setup.php');"
 sudo mv composer.phar /usr/local/bin/composer
 
-# Install Code-Server
-curl -fsSL https://code-server.dev/install.sh | sh
-
 # Configure LEMP
 sudo mysqladmin -u root password ''
 sudo mysql_upgrade -uroot --force
+
+# Install Code-Server
+curl -fsSL https://code-server.dev/install.sh | sh
 
 gsettings reset org.gnome.shell app-picker-layout
