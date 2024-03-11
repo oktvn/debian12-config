@@ -12,10 +12,13 @@ sudo apt autoremove -y
 curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 
+# Non-free repo
+sudo apt-add-repository contrib non-free -y
+
 sudo apt upgrade -y
 sudo apt update -y
 # Install misc
-sudo apt install -y git wget gpg apt-transport-https spotify-client sshpass bleachbit
+sudo apt install -y git wget gpg apt-transport-https spotify-client sshpass bleachbit ttf-mscorefonts-installer
 
 # Install Gnome extensions:
 rm -rf $HOME/.local/share/gnome-shell/extensions/
