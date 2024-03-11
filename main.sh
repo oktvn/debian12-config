@@ -12,15 +12,10 @@ sudo apt autoremove -y
 curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 
-# Adding VSCode Repos
-curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && rm -f packages.microsoft.gpg
-sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-
 sudo apt upgrade -y
 sudo apt update -y
 # Install misc
-sudo apt install -y git wget gpg apt-transport-https code spotify-client sshpass bleachbit
+sudo apt install -y git wget gpg apt-transport-https spotify-client sshpass bleachbit
 
 # Install Gnome extensions:
 rm -rf $HOME/.local/share/gnome-shell/extensions/
@@ -58,6 +53,9 @@ php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b3
 php composer-setup.php
 php -r "unlink('composer-setup.php');"
 sudo mv composer.phar /usr/local/bin/composer
+
+# Install Code-Server
+curl -fsSL https://code-server.dev/install.sh | sh
 
 # Configure LEMP
 sudo mysqladmin -u root password ''
