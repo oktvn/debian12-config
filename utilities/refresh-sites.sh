@@ -104,7 +104,12 @@ removeHostsEntries;
 emptyBrowserCerts;
 
 for folder in "$SITES_DIR"/*/; do
-    SITE_NAME=$(basename "$folder")           
+    SITE_NAME=$(basename "$folder")
+if [ -d "$folder/web" ]; then
+    WEB_ROOT="$folder/web"
+else
+    WEB_ROOT=$SITES_DIR$SITE_NAME
+fi
 if [[ $SITE_NAME == *"."* ]]; then
     becomeCertificateAuthority;
     generateCertificateAndKeys;
@@ -122,7 +127,7 @@ server {
     ssl_certificate_key /etc/ssl/private/$SITE_NAME.key;
     
     server_name $SITE_NAME;
-    root "/home/oktvn/sites/$SITE_NAME";
+    root "$WEB_ROOT";
     
     index index.html;
     charset utf-8;
@@ -174,3 +179,5 @@ done
 sudo update-ca-certificates
 sudo nginx -t
 sudo service nginx restart
+
+# Copy into /usr/local/bin/refresh-sites
