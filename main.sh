@@ -20,10 +20,13 @@ sudo apt install -y git wget gpg spotify-client sshpass bleachbit ttf-mscorefont
 # Remove password prompt when running sudo
 echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 
-# Install Ublock for Firefox
-sudo apt install -y webext-ublock-origin-firefox
-# Install chromium
-sudo apt install -y chromium webext-ublock-origin-chromium
+# Kate as default editor
+sudo rm -rf /usr/lib/mime/packages/vim*
+echo -e "application/octet-stream;view %s;edit=kate %s > /dev/null 2>&1 &; compose=kate %s > /dev/null 2>&1 &;priority=1
+text/plain;view %s;edit=kate %s > /dev/null 2>&1 &;compose=kate %s > /dev/null 2>&1 &;priority=2
+text/*;view %s;edit=kate %s > /dev/null 2>&1 &;compose=kate %s > /dev/null 2>&1 &;priority=3
+" | sudo tee /usr/lib/mime/packages/kate
+sudo update-mime
 
 # 2. Modify ~/.profile. Append:
 echo -e "export MOZ_ENABLE_WAYLAND=1" >> ~/.profile
