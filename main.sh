@@ -1,11 +1,8 @@
 # Settings
 dconf load / < ./configs/dconf-settings.ini
 
-# Remove games & all useless trash.
 sudo systemctl stop packagekit
-sudo apt remove -y gnome-sudoku gnome-maps gnome-games gnome-mahjongg gnome-mines gnome-nibbles gnome-robots gnome-taquin \ 
-xiterm+thai aisleriot four-in-a-row five-or-more gnome-2048 tali swell-foop hitori mozc-server mlterm-* goldendict thunderbird anthy* mozc* \
-hspell aspell-he myspell-he libhdate1 culmus hdate-applet
+sudo apt remove -y xiterm+thai mlterm-* goldendict anthy* mozc* hspell aspell-he myspell-he libhdate1 culmus hdate-applet
 sudo apt autoremove -y
 
 # Adding Spotify Repos
@@ -18,24 +15,7 @@ sudo apt-add-repository contrib non-free -y
 sudo apt upgrade -y
 sudo apt update -y
 # Install misc
-sudo apt install -y git wget gpg apt-transport-https spotify-client sshpass bleachbit ttf-mscorefonts-installer
-
-# Install Gnome extensions:
-rm -rf $HOME/.local/share/gnome-shell/extensions/
-sudo apt install pipx -y --no-install-recommends && pipx ensurepath
-pipx install gnome-extensions-cli --system-site-packages && source $HOME/.bashrc
-gext install dash-to-panel@jderose9.github.com
-gext install ding@rastersoft.com
-gext install gestureImprovements@gestures
-
-# Thunar instead of Nautilus
-sudo apt install thunar --no-install-recommends
-sudo rm -rf /usr/share/applications/thunar*
-sudo cp /usr/share/applications/org.gnome.Nautilus.desktop /usr/share/applications/thunar.desktop
-sudo sed -i 's/nautilus/thunar/g' /usr/share/applications/thunar.desktop
-sudo sed -i 's/--new-window//g' /usr/share/applications/thunar.desktop
-sudo rm -rf /usr/share/applications/org.gnome.Nautilus.desktop
-xdg-desktop-menu forceupdate
+sudo apt install -y git wget gpg spotify-client sshpass bleachbit ttf-mscorefonts-installer
 
 # Remove password prompt when running sudo
 echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
@@ -59,9 +39,22 @@ sudo mv composer.phar /usr/local/bin/composer
 mkdir -p $HOME/Sites
 echo -e "[Desktop Entry]\nIcon=folder_html\n" > $HOME/Sites/.directory
 
-# Configure LEMP
+# Configure NGINX
+sudo sed -i "s/user www-data;/user $USER;/" /etc/nginx/nginx.conf
+sudo rm -rf /etc/nginx/sites-enabled/*
+
+# Configure MySQL
 sudo mysqladmin -u root password ''
 sudo mysql_upgrade -uroot --force
+
+# Configure PHP FPM
+sudo sed -i "s/memory_limit = 128M/memory_limit = 512M/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/www-data/$USER/" /etc/php/8.2/fpm/pool.d/www.conf
+
+# Restart
+sudo service mariadb restart
+sudo service php8.2-fpm restart
+sudo service nginx restart
 
 # Install Code-Server
 curl -fsSL https://code-server.dev/install.sh | sh
@@ -69,8 +62,4 @@ sudo sed -i "s/sistem-ui/'Segoe UI'/g" /lib/code-server/lib/vscode/out/vs/workbe
 sudo systemctl enable --now code-server@$USER
 echo -e "bind-addr: 127.0.0.1:8080\ncert: false\nauth: none" > $HOME/.config/code-server/config.yaml
 sudo systemctl restart code-server@$USER
-
-# No password auth?
-# Install Segoe UI font
-
-gsettings reset org.gnome.shell app-picker-layout
+# Favicons
