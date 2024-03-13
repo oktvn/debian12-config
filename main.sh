@@ -66,6 +66,10 @@ sudo mysql_upgrade -uroot --force
 # Install Code-Server
 curl -fsSL https://code-server.dev/install.sh | sh
 sudo sed -i "s/sistem-ui/'Segoe UI'/g" /lib/code-server/lib/vscode/out/vs/workbench/workbench.web.main.css
+sudo systemctl enable --now code-server@$USER
+echo -e "bind-addr: 127.0.0.1:8080\ncert: false\nauth: none" > $HOME/.config/code-server/config.yaml
+sudo systemctl restart code-server@$USER
+
 # No password auth?
 # Install Segoe UI font
 
