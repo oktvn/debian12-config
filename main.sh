@@ -57,6 +57,7 @@ php composer-setup.php
 php -r "unlink('composer-setup.php');"
 sudo mv composer.phar /usr/local/bin/composer
 mkdir -p $HOME/Sites
+echo -e "[Desktop Entry]\nIcon=folder_html\n" > $HOME/Sites/.directory
 
 # Configure LEMP
 sudo mysqladmin -u root password ''
