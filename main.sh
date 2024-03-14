@@ -107,6 +107,65 @@ server {
 ' | sudo tee /etc/nginx/sites-enabled/pma
 }&> /dev/null
 
+echo "Creating config file for sites in home directory..."
+{
+echo -e '
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    ssl_certificate /etc/letsencrypt/live/local.corcodel.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/local.corcodel.com/privkey.pem;
+
+    server_name ~^(?<subdomain>.+)\.local\.corcodel\.com$;
+    set $root "/home/user/Sites/$subdomain/web";
+    
+    #if ($subdomain = "foobar") {
+    #    set $root "/somewhere/else/entirely";
+    #}
+    root $root;
+    
+    index index.html index.php;
+    charset utf-8;
+    gzip_static on;
+    ssi on;
+    client_max_body_size 0;
+    error_page 404 /index.php?$query_string;
+    access_log off;
+    error_log  /var/log/nginx/$subdomain-error.log error;
+    location / {
+        try_files $uri/index.html $uri $uri/ /index.php?$query_string;
+    }
+    location ~* ^.+\.(jpg|jpeg|gif|css|png|js|ico)$ {
+        access_log off;expires 1d;
+    }
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        include fastcgi_params;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_param REQUEST_SCHEME "https";
+        fastcgi_param HTTPS "on";
+        fastcgi_param PHP_VALUE "upload_max_filesize = -1 \n post_max_size = -1 \n display_errors = on \n display_startup_errors = on";
+        add_header Last-Modified $date_gmt;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+        if_modified_since off;
+        expires off;
+        etag off;
+        fastcgi_intercept_errors off;
+        fastcgi_buffer_size 16k;
+        fastcgi_buffers 4 16k;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout 300;
+        fastcgi_read_timeout 300;
+    }
+}
+' | sudo tee /etc/nginx/sites-enabled/default
+}&> /dev/null
+
 # Restart
 sudo service mariadb restart
 sudo service php8.2-fpm restart
