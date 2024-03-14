@@ -1,3 +1,5 @@
+# Todo: Split into multiple scripts for ease of maintenance
+
 sudo apt remove -y xiterm+thai mlterm-* goldendict anthy* mozc* hspell aspell-he myspell-he libhdate1 culmus hdate-applet
 sudo apt autoremove -y
 
@@ -107,6 +109,28 @@ server {
 ' | sudo tee /etc/nginx/sites-enabled/pma
 }&> /dev/null
 
+echo "Creating reverse proxy for code-server..."
+{
+echo -e '
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    ssl_certificate /etc/letsencrypt/live/local.corcodel.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/local.corcodel.com/privkey.pem;
+    server_name code.local.corcodel.com;
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection upgrade;
+        proxy_set_header Accept-Encoding gzip;
+    }
+}
+' | sudo tee /etc/nginx/sites-enabled/code-server
+}&> /dev/null
+
 echo "Creating config file for sites in home directory..."
 {
 echo -e '
@@ -119,11 +143,13 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/local.corcodel.com/privkey.pem;
 
     server_name ~^(?<subdomain>.+)\.local\.corcodel\.com$;
-    set $root "/home/user/Sites/$subdomain/web";
-    
-    #if ($subdomain = "foobar") {
-    #    set $root "/somewhere/else/entirely";
-    #}
+    set $root "/home/user/Sites/$subdomain";
+
+    # Craft-specific
+    if (-d /home/user/Sites/$subdomain/web) {
+        set $root /home/user/Sites/$subdomain/web;
+    }
+
     root $root;
     
     index index.html index.php;
@@ -165,6 +191,8 @@ server {
 }
 ' | sudo tee /etc/nginx/sites-enabled/default
 }&> /dev/null
+
+# To-do: self-sign certificate for *.local.corcodel.com if Letsencrypt expired.
 
 # Restart
 sudo service mariadb restart
