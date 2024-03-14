@@ -81,7 +81,7 @@ server {
     listen 80 default_server;
     root /var/www/html;
     index index.php;
-    server_name pma.dev.local;
+    server_name pma.local.corcodel.com;
     location / {
         try_files $uri $uri/ =404;
     }
