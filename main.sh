@@ -81,7 +81,7 @@ server {
     listen 80 default_server;
     root /var/www/html;
     index index.php;
-    server_name pma.dev;
+    server_name pma.dev.local;
     location / {
         try_files $uri $uri/ =404;
     }
