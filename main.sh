@@ -11,7 +11,7 @@ sudo apt-add-repository contrib non-free -y
 sudo apt upgrade -y
 sudo apt update -y
 # Install misc
-sudo apt install -y git wget gpg spotify-client sshpass ttf-mscorefonts-installer
+sudo apt install -y git wget gpg spotify-client sshpass ttf-mscorefonts-installer dnsutils
 
 # Remove password prompt when running sudo
 echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
