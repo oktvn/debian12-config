@@ -1,7 +1,3 @@
-# Settings
-dconf load / < ./configs/dconf-settings.ini
-
-sudo systemctl stop packagekit
 sudo apt remove -y xiterm+thai mlterm-* goldendict anthy* mozc* hspell aspell-he myspell-he libhdate1 culmus hdate-applet
 sudo apt autoremove -y
 
@@ -28,10 +24,6 @@ text/*;view %s;edit=kate %s > /dev/null 2>&1 &;compose=kate %s > /dev/null 2>&1 
 " | sudo tee /usr/lib/mime/packages/kate
 sudo update-mime
 
-# 2. Modify ~/.profile. Append:
-echo -e "export MOZ_ENABLE_WAYLAND=1" >> ~/.profile
-
-
 # Install LEMP & Composer
 sudo apt install -y php8.2-{fpm,curl,zip,gd,mysqli,mbstring,pgsql,xml,bcmath,intl,soap,imagick} nginx mariadb-server
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -54,10 +46,6 @@ sudo mysql_upgrade -uroot --force
 sudo sed -i "s/memory_limit = 128M/memory_limit = 512M/" /etc/php/8.2/fpm/php.ini
 sudo sed -i "s/www-data/$USER/" /etc/php/8.2/fpm/pool.d/www.conf
 
-# Restart
-sudo service mariadb restart
-sudo service php8.2-fpm restart
-sudo service nginx restart
 
 # Install Code-Server
 curl -fsSL https://code-server.dev/install.sh | sh
@@ -66,3 +54,60 @@ sudo systemctl enable --now code-server@$USER
 echo -e "bind-addr: 127.0.0.1:8080\ncert: false\nauth: none" > $HOME/.config/code-server/config.yaml
 sudo systemctl restart code-server@$USER
 # Favicons
+
+
+# Phpmyadmin
+
+echo "Downloading phpMyAdmin..."
+{
+    mkdir -p /var/www/html/
+    sudo chown -R $USER:$USER /var/www/html/
+    cd /var/www/html/
+    rm -rf *
+    wget --no-check-certificate "https://files.phpmyadmin.net/phpMyAdmin/5.2.1/phpMyAdmin-5.2.1-english.zip"
+    unzip *
+    rm *.zip
+    mv */* .
+    mv /var/www/html/config.sample.inc.php /var/www/html/config.inc.php
+    sed -i "s/'cookie'/'config'/" /var/www/html/config.inc.php
+    sed -i "s/'compress'] = false;/'user'] = 'root';/" /var/www/html/config.inc.php
+    sed -i "s/'AllowNoPassword'] = false;/'AllowNoPassword'] = true;/" /var/www/html/config.inc.php
+}&> /dev/null
+
+echo "Creating config file for phpMyAdmin..."
+{
+echo -e '
+server {
+    listen 80 default_server;
+
+    root /var/www/html;
+
+    index index.php;
+
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # serve static files directly
+    location ~* ^.+\.(jpg|jpeg|gif|css|png|js|ico)$ {
+        access_log off;expires 1d;
+    }
+
+    # pass PHP scripts to FastCGI serve
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param REQUEST_SCHEME "https";
+        fastcgi_param HTTPS "on";
+        fastcgi_param PHP_VALUE "upload_max_filesize = -1 \n post_max_size = -1 \n display_errors = on \n display_startup_errors = on";
+    }
+}
+' | sudo tee /etc/nginx/sites-enabled/pma
+}&> /dev/null
+
+# Restart
+sudo service mariadb restart
+sudo service php8.2-fpm restart
+sudo service nginx restart
