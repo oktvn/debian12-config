@@ -74,6 +74,8 @@ echo "Downloading phpMyAdmin..."
     sed -i "s/'AllowNoPassword'] = false;/'AllowNoPassword'] = true;/" /var/www/html/config.inc.php
 }&> /dev/null
 
+# Re-run sudo certbot certonly --manual --preferred-challenges dns -d '*.local.corcodel.com' if cert expires
+
 echo "Creating config file for phpMyAdmin..."
 {
 echo -e '
@@ -82,9 +84,8 @@ server {
     listen [::]:80;
     listen 443 ssl;
     listen [::]:443 ssl;
-    
-    ssl_certificate /etc/ssl/certs/wildcard.local.corcodel.com.crt;
-    ssl_certificate_key /etc/ssl/private/wildcard.local.corcodel.com.key;
+    ssl_certificate /etc/letsencrypt/live/local.corcodel.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/local.corcodel.com/privkey.pem;
     
     root /var/www/html;
     index index.php;
