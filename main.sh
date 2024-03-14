@@ -11,7 +11,7 @@ sudo apt-add-repository contrib non-free -y
 sudo apt upgrade -y
 sudo apt update -y
 # Install misc
-sudo apt install -y git wget gpg spotify-client sshpass bleachbit ttf-mscorefonts-installer
+sudo apt install -y git wget gpg spotify-client sshpass ttf-mscorefonts-installer
 
 # Remove password prompt when running sudo
 echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
@@ -79,23 +79,15 @@ echo "Creating config file for phpMyAdmin..."
 echo -e '
 server {
     listen 80 default_server;
-
     root /var/www/html;
-
     index index.php;
-
-    server_name _;
-
+    server_name pma.dev;
     location / {
         try_files $uri $uri/ =404;
     }
-
-    # serve static files directly
     location ~* ^.+\.(jpg|jpeg|gif|css|png|js|ico)$ {
         access_log off;expires 1d;
     }
-
-    # pass PHP scripts to FastCGI serve
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
