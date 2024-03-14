@@ -53,9 +53,34 @@ sudo sed -i "s/www-data/$USER/" /etc/php/8.2/fpm/pool.d/www.conf
 curl -fsSL https://code-server.dev/install.sh | sh
 sudo sed -i "s/sistem-ui/'Segoe UI'/g" /lib/code-server/lib/vscode/out/vs/workbench/workbench.web.main.css
 sudo systemctl enable --now code-server@$USER
-echo -e "bind-addr: 127.0.0.1:8080\ncert: false\nauth: none" > $HOME/.config/code-server/config.yaml
+echo -e "bind-addr: 127.0.0.1:9998\ncert: false\nauth: none" > $HOME/.config/code-server/config.yaml
 sudo systemctl restart code-server@$USER
-# Favicons
+
+echo "Creating reverse proxy for code-server..."
+{
+echo -e '
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    ssl_certificate /etc/letsencrypt/live/local.corcodel.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/local.corcodel.com/privkey.pem;
+    server_name code.local.corcodel.com;
+    location / {
+        proxy_pass http://localhost:9998;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection upgrade;
+        proxy_set_header Accept-Encoding gzip;
+    }
+}
+' | sudo tee /etc/nginx/sites-enabled/code-server
+}&> /dev/null
+
+# TODO: Favicons
+# TODO: Custom configs for code-server
+
 
 
 # Phpmyadmin
@@ -107,28 +132,6 @@ server {
     }
 }
 ' | sudo tee /etc/nginx/sites-enabled/pma
-}&> /dev/null
-
-echo "Creating reverse proxy for code-server..."
-{
-echo -e '
-server {
-    listen 80;
-    listen [::]:80;
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    ssl_certificate /etc/letsencrypt/live/local.corcodel.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/local.corcodel.com/privkey.pem;
-    server_name code.local.corcodel.com;
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection upgrade;
-        proxy_set_header Accept-Encoding gzip;
-    }
-}
-' | sudo tee /etc/nginx/sites-enabled/code-server
 }&> /dev/null
 
 echo "Creating config file for sites in home directory..."
