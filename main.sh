@@ -78,7 +78,14 @@ echo "Creating config file for phpMyAdmin..."
 {
 echo -e '
 server {
-    listen 80 default_server;
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    
+    ssl_certificate /etc/ssl/certs/wildcard.local.corcodel.com.crt;
+    ssl_certificate_key /etc/ssl/private/wildcard.local.corcodel.com.key;
+    
     root /var/www/html;
     index index.php;
     server_name pma.local.corcodel.com;
